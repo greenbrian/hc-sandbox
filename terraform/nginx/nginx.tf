@@ -5,18 +5,14 @@ variable "nginx_server_count" {}
 variable "subnet_id" {}
 variable "xlb_sg_id" {}
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners = ["self"]
-  filter {
-    name = "name"
-    values = ["ubuntu-16-nginx*"]
-  }
+data "atlas_artifact" "nginx" {
+  name = "bgreen/nginx"
+  type = "amazon.image"
+  build = "latest"
 }
 
-
 resource "aws_instance" "nginx" {
-    ami = "${data.aws_ami.ubuntu.id}"
+    ami = "${data.atlas_artifact.nginx.metadata_full.region-us-east-1}"
     instance_type = "t2.micro"
     count = "${var.nginx_server_count}"
     subnet_id = "${var.subnet_id}"
