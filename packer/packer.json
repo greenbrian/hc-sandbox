@@ -1,0 +1,99 @@
+{
+  "variables": {
+    "username": "{{env `USER`}}"
+  },
+  "builders": [
+    {
+      "name": "consul-vault",
+      "type": "amazon-ebs",
+      "region": "us-west-1",
+      "source_ami": "ami-a9a8e4c9",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "ubuntu-16-consul-vault-{{isotime \"2006-01-02-15-04\"}}",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Latest"
+      }
+    },
+    {
+      "name": "nginx",
+      "type": "amazon-ebs",
+      "region": "us-west-1",
+      "source_ami": "ami-a9a8e4c9",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "ubuntu-16-nginx-{{isotime \"2006-01-02-15-04\"}}",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Latest"
+      }
+    },
+    {
+      "name": "haproxy",
+      "type": "amazon-ebs",
+      "region": "us-west-1",
+      "source_ami": "ami-a9a8e4c9",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "ubuntu-16-haproxy-{{isotime \"2006-01-02-15-04\"}}",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Latest"
+      }
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/base.sh",
+        "scripts/consul.sh",
+        "scripts/consul-template.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/consul-ui.sh",
+        "scripts/vault.sh"
+      ],
+      "only": ["consul-vault"]
+    },
+    {
+      "type": "shell",
+      "script": "scripts/haproxy.sh",
+      "only": ["haproxy"]
+    },
+    {
+      "type": "shell",
+      "script": "scripts/nginx.sh",
+      "only": ["nginx"]
+    },
+    {
+      "type": "shell",
+        "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+        "inline": [
+           "sudo useradd -m {{user `username`}} -s /bin/bash",
+           "sudo mkdir -p /home/{{user `username`}}/.ssh/",
+           "sudo echo \"{{user `username`}} ALL=(root) NOPASSWD: ALL\" >> /etc/sudoers.d/{{user `username`}}"
+            ]
+    },
+    {
+      "type": "file",
+        "source": "/Users/{{user `username`}}/.ssh/id_rsa.pub",
+        "destination": "/tmp/authorized_keys"
+    },
+    {
+      "type": "shell",
+        "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+        "inline": [
+           "sudo mv /tmp/authorized_keys /home/{{user `username`}}/.ssh/authorized_keys",
+           "sudo chown -R {{user `username`}}:{{user `username`}} /home/{{user `username`}}/.ssh/",
+           "sudo chmod 700 /home/{{user `username`}}/.ssh/",
+           "sudo chmod 600 /home/{{user `username`}}/.ssh/authorized_keys"
+            ]
+    }
+  ]
+}
