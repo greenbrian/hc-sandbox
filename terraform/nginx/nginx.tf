@@ -20,9 +20,13 @@ resource "aws_instance" "nginx" {
     tags = {
       env = "xlb-demo"
     }
+    provisioner "local-exec" {
+        command = "echo ${var.key_path} > key"
+    }
+
     connection {
         user = "${var.user}"
-        private_key = "${var.key_path}"
+        private_key = "${file("key")}"
     }
 
     provisioner "remote-exec" {
