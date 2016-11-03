@@ -100,5 +100,34 @@
            "sudo chmod 600 /home/{{user `atlas_username`}}/.ssh/authorized_keys"
             ]
     }
+  ],
+  "post-processors": [
+    {
+      "type": "atlas",
+      "only": ["consul-vault"],
+      "artifact": "{{user `atlas_username`}}/consul-vault",
+      "artifact_type": "amazon.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    },
+    {
+      "type": "atlas",
+      "only": ["nginx"],
+      "artifact": "{{user `atlas_username`}}/nginx",
+      "artifact_type": "amazon.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    },
+    {
+      "type": "atlas",
+      "only": ["haproxy"],
+      "artifact": "{{user `atlas_username`}}/haproxy",
+      "artifact_type": "amazon.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    }
   ]
 }
