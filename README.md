@@ -15,3 +15,10 @@ packer/config contains config files
 Login to web interface  
 Navigate to Packer on left pane  
 Click New Build Configuration  
+
+## Terraform code details
+
+terraform/main.tf is the main Terraform executable
+terraform/consul-vault contains Consul/Vault specific Terraform code
+terraform/haproxy contains HAProxy specific Terraform code
+terraform/nginx contains Nginx specific Terraform code  
