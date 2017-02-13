@@ -51,21 +51,19 @@ resource "aws_instance" "consul-vault" {
         ]
     }
 
-/*  ###################   WARNING    #########################  */
-/* The following steps are not recommended for production usage */
-/* The script will initialize your vault and store the secret   */
-/* keys insecurely and is only used for demonstration purposes  */
+  /*  ###################   WARNING    #########################  */
+  /* The following steps are not recommended for production usage */
+  /* The script will initialize your vault and store the secret   */
+  /* keys insecurely and is only used for demonstration purposes  */
 
-    provisioner "file" {
-        source = "${path.module}/scripts/setup_vault.sh",
-        destination = "/tmp/setup_vault.sh"
-    }
-
-    provisioner "remote-exec" {
-        inline = [
-            "sudo chmod +x /tmp/setup_vault.sh",
-            "nohup /tmp/setup_vault.sh &",
-            "sleep 1"
-        ]
-    }
+  provisioner "file" {
+    source      = "${path.module}/scripts/vault_init_and_unseal.sh"
+    destination = "/tmp/vault_init_and_unseal.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod +x /tmp/vault_init_and_unseal.sh",
+      "echo /tmp/vault_init_and_unseal.sh | at now + 2 min",
+    ]
+  }
 }
