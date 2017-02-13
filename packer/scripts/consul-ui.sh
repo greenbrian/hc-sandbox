@@ -4,7 +4,7 @@ set -e
 sudo mkdir /opt/consul-ui
 
 echo "Fetching Consul Web UI..."
-VERSION=0.7.0
+VERSION=0.7.4
 cd /tmp
 wget https://releases.hashicorp.com/consul/${VERSION}/consul_${VERSION}_web_ui.zip \
     --quiet \
