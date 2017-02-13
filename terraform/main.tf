@@ -28,7 +28,7 @@ module "nginx" {
   source = "./nginx"
   user = "${var.user}"
   key_path = "${var.bg_priv_key}"
-  nginx_server_count = 3
+  nginx_server_count = 5
   primary_consul = "${module.consul-vault.primary_consul}"
   subnet_id = "${module.network.subnet_id}"
   xlb_sg_id ="${module.network.xlb_sg_id}"
