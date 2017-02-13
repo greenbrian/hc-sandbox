@@ -3,7 +3,7 @@
 set -e
 
 echo "Fetching Vault..."
-VAULT=0.6.1
+VAULT=0.6.5
 cd /tmp
 wget https://releases.hashicorp.com/vault/${VAULT}/vault_${VAULT}_linux_amd64.zip \
     --quiet \
