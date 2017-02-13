@@ -8,17 +8,18 @@ export VAULT_ADDR=http://127.0.0.1:8200
 cget() { curl -sf "http://127.0.0.1:8500/v1/kv/service/vault/$1?raw"; }
 
 if [ ! $(cget root-token) ]; then
-  echo "Initialize Vault"
+  logger "$0 - Initializing Vault"
   vault init -address=http://localhost:8200 | tee /tmp/vault.init > /dev/null
 
   # Store master keys in consul for operator to retrieve and remove
+  # Store master keys in consul for operator to retrieve and remove
   COUNTER=1
-  cat /tmp/vault.init | grep 'hex' | awk '{print $6}' | for key in $(cat -); do
+  grep 'Unseal' /tmp/vault.init | awk '{print $4}' | for key in $(cat -); do
     curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/unseal-key-$COUNTER -d $key
     COUNTER=$((COUNTER + 1))
   done
 
-  export ROOT_TOKEN=$(cat /tmp/vault.init | grep 'Root' | awk '{print $4}')
+  export ROOT_TOKEN=$(grep 'Root' /tmp/vault.init | awk '{print $4}')
   curl -fX PUT 127.0.0.1:8500/v1/kv/service/vault/root-token -d $ROOT_TOKEN
 
   echo "Remove master keys from disk"
